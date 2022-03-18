@@ -42,7 +42,7 @@ const Home: NextPage = () => {
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
-          size={30}
+          size={28}
           style={{ padding: "4px 10px", fontSize: "18px" }}
         />
       </div>
