@@ -29,7 +29,9 @@ const Home: NextPage = () => {
         fontFamily: "Libre Baskerville",
       }}
     >
-      <div style={{ margin: "1em" }}>Google text-only search</div>
+      <div style={{ margin: "1em", fontSize: "16px" }}>
+        Google text-only search
+      </div>
       <div style={{ margin: "1em" }}>
         <input
           type="search"
@@ -40,25 +42,48 @@ const Home: NextPage = () => {
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
+          size={30}
+          style={{ padding: "4px 10px", fontSize: "18px" }}
         />
       </div>
-      <div style={{ width: "720px" }}>
+      <div style={{ maxWidth: "720px" }}>
         {results &&
-          results.map((result, index) => (
-            <div key={index} style={{ margin: "2em" }}>
-              <div>{result.source}</div>
-              <div
-                style={{
-                  fontSize: "18px",
-                  marginTop: ".25em",
-                  marginBottom: ".5em",
-                }}
-              >
-                <a href={result.href}>{result.title}</a>
-              </div>
-              <div>{result.blurb}</div>
-            </div>
-          ))}
+          results.map((result, index) => {
+            if (result.title === result.blurb) {
+              return (
+                <div key={index} style={{ margin: "2em" }}>
+                  <div
+                    style={{
+                      fontSize: "18px",
+                      marginTop: ".25em",
+                      marginBottom: ".5em",
+                      color: "black",
+                    }}
+                  >
+                    <a href={result.href}>{result.source}</a>
+                  </div>
+                  <div color="gray">{result.blurb}</div>
+                </div>
+              );
+            } else {
+              return (
+                <div key={index} style={{ margin: "2em" }}>
+                  <div>{result.source}</div>
+                  <div
+                    style={{
+                      fontSize: "18px",
+                      marginTop: ".25em",
+                      marginBottom: ".5em",
+                      color: "black",
+                    }}
+                  >
+                    <a href={result.href}>{result.title}</a>
+                  </div>
+                  <div color="gray">{result.blurb}</div>
+                </div>
+              );
+            }
+          })}
       </div>
     </div>
   );
