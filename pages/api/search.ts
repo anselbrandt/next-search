@@ -41,7 +41,7 @@ export default async function handler(
     const blurb = link.parentElement?.parentElement?.textContent;
     linksMap.set(i, {
       title: title,
-      href: href,
+      href: decodeURIComponent(href).split("&")[0],
       source: new URL(href).hostname,
       blurb: blurb,
     });
