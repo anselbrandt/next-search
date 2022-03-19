@@ -33,24 +33,41 @@ export const parse = (html: string) => {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(html);
   const { document } = dom.window;
-  const linksMap = new Map();
   const links = document.querySelectorAll("a");
   const linksArray = Array.from(links);
   const results = linksArray.filter((el) => el.href.includes("/url?q="));
-  results.forEach((link, i) => {
-    const href = link.href.replace("/url?q=", "");
-    const title = link.parentElement?.textContent;
-    const blurb = link.parentElement?.parentElement?.textContent?.replace(
-      title!,
-      ""
-    );
-    linksMap.set(i, {
-      title: title,
-      href: decodeURIComponent(href).split("&")[0],
-      source: new URL(href).hostname,
-      blurb: trim(blurb!),
+  const linksSet = new Set();
+  const resultLinks = results
+    .map((el) => {
+      const siblings = el.parentElement?.childElementCount;
+      const href = decodeURIComponent(el.href.replace("/url?q=", "")).split(
+        "&"
+      )[0];
+      const source = new URL(href).hostname.replace("www.", "");
+      const title = el.textContent
+        ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
+        .replace(/[\n\r]+|[\s]{2,}/g, " ")
+        .trim();
+      const blurb =
+        siblings === 1 &&
+        !href.includes("wikipedia.org") &&
+        trim(
+          el.parentElement?.parentElement?.textContent
+            ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
+            .replace(/[\n\r]+|[\s]{2,}/g, " ")
+            .trim()
+            .replace(title!, "")!
+        );
+      return { href, title, blurb, source };
+    })
+    .filter((link) => {
+      const exists = linksSet.has(link.href);
+      if (exists) {
+        return false;
+      } else {
+        linksSet.add(link.href);
+        return true;
+      }
     });
-  });
-  const linksObject = Object.fromEntries(linksMap);
-  return Object.values(linksObject);
+  return resultLinks;
 };
