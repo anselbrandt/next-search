@@ -40,7 +40,6 @@ export const parse = (html: string) => {
   const resultLinks = results
     .filter((el) => el.parentElement?.childElementCount === 1)
     .map((el) => {
-      const siblings = el.parentElement?.childElementCount;
       const href = decodeURIComponent(el.href.replace("/url?q=", "")).split(
         "&"
       )[0];
@@ -52,15 +51,15 @@ export const parse = (html: string) => {
         .trim()
         .replace(hostname, "");
       const blurb =
-        siblings === 1 &&
         !href.includes("wikipedia.org") &&
         trim(
           el.parentElement?.parentElement?.textContent
             ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
             .replace(/[\n\r]+|[\s]{2,}/g, " ")
-            .trim()
-            .replace(title!, "")!
-        ).replace(hostname, "");
+            .trim()!
+        )
+          .replace(hostname, "")
+          .replace(title!, "");
       return { href, title, blurb, source };
     })
     .filter((link) => {
