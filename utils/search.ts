@@ -50,16 +50,14 @@ export const parse = (html: string) => {
         .replace(/[\n\r]+|[\s]{2,}/g, " ")
         .trim()
         .replace(hostname, "");
-      const blurb =
-        !href.includes("wikipedia.org") &&
-        trim(
-          el.parentElement?.parentElement?.textContent
-            ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
-            .replace(/[\n\r]+|[\s]{2,}/g, " ")
-            .trim()!
-        )
-          .replace(hostname, "")
-          .replace(title!, "");
+      const blurb = trim(
+        el.parentElement?.parentElement?.textContent
+          ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
+          .replace(/[\n\r]+|[\s]{2,}/g, " ")
+          .trim()!
+      )
+        .replace(hostname, "")
+        .replace(title!, "");
       return { href, title, blurb, source };
     })
     .filter((link) => {
