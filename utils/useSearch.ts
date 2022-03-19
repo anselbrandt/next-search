@@ -7,17 +7,30 @@ interface Results {
   blurb: string;
 }
 
-export default function useSearch(query: string | undefined) {
+type Query = {
+  query?: string;
+  nonce?: number;
+};
+
+export default function useSearch({ query, nonce }: Query) {
   const [results, setResults] = useState<Results[]>();
-  const [error, setError] = useState();
+  const [error, setError] = useState<any>();
 
   useEffect(() => {
     if (query !== undefined) {
       const search = async () => {
         try {
           const response = await fetch(`/api/search?q=${query}`);
-          const json = (await response.json()) as Results[];
-          setResults(json);
+          if (response.ok) {
+            const json = (await response.json()) as Results[];
+            setResults(json);
+          } else {
+            const error = {
+              code: response.status,
+              message: response.statusText,
+            };
+            setError(error);
+          }
         } catch (err) {
           const error: any = err;
           setError(error);
@@ -26,7 +39,7 @@ export default function useSearch(query: string | undefined) {
       };
       search();
     }
-  }, [query]);
+  }, [nonce]);
 
   return { results, error };
 }

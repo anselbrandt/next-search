@@ -2,10 +2,15 @@ import type { NextPage } from "next";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import useSearch from "../utils/useSearch";
 
+interface Query {
+  query: string;
+  nonce: number;
+}
+
 const Home: NextPage = () => {
   const [input, setInput] = useState<string>();
-  const [query, setQuery] = useState<string>();
-  const { results } = useSearch(query);
+  const [query, setQuery] = useState<Query | {}>({});
+  const { results, error } = useSearch(query as Query);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
@@ -14,7 +19,11 @@ const Home: NextPage = () => {
 
   const handleSubmit = (event: KeyboardEvent) => {
     if (event.key === "Enter" && input) {
-      setQuery(encodeURI(input));
+      const time = new Date().getTime();
+      setQuery({
+        query: input,
+        nonce: time,
+      });
     }
   };
   return (
@@ -26,7 +35,6 @@ const Home: NextPage = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        fontFamily: "Libre Baskerville",
       }}
     >
       <div style={{ margin: "1em", fontSize: "16px" }}>
@@ -47,9 +55,14 @@ const Home: NextPage = () => {
         />
       </div>
       <div style={{ maxWidth: "720px" }}>
+        {error && (
+          <div style={{ margin: "2em" }}>
+            <pre>{JSON.stringify(error, null, 2)}</pre>
+          </div>
+        )}
         {results &&
           results.map((result, index) => {
-            if (result.title === result.blurb) {
+            if (!result.blurb) {
               return (
                 <div key={index} style={{ margin: "2em" }}>
                   <div
@@ -62,7 +75,9 @@ const Home: NextPage = () => {
                   >
                     <a href={result.href}>{result.source}</a>
                   </div>
-                  <div color="gray">{result.blurb}</div>
+                  <div color="gray" style={{ fontFamily: "Libre Baskerville" }}>
+                    {result.title}
+                  </div>
                 </div>
               );
             } else {
@@ -79,7 +94,9 @@ const Home: NextPage = () => {
                   >
                     <a href={result.href}>{result.title}</a>
                   </div>
-                  <div color="gray">{result.blurb}</div>
+                  <div color="gray" style={{ fontFamily: "Libre Baskerville" }}>
+                    {result.blurb}
+                  </div>
                 </div>
               );
             }
