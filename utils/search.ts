@@ -38,16 +38,19 @@ export const parse = (html: string) => {
   const results = linksArray.filter((el) => el.href.includes("/url?q="));
   const linksSet = new Set();
   const resultLinks = results
+    .filter((el) => el.parentElement?.childElementCount === 1)
     .map((el) => {
       const siblings = el.parentElement?.childElementCount;
       const href = decodeURIComponent(el.href.replace("/url?q=", "")).split(
         "&"
       )[0];
-      const source = new URL(href).hostname.replace("www.", "");
+      const hostname = new URL(href).hostname;
+      const source = hostname.replace("www.", "");
       const title = el.textContent
         ?.replace(/[\n\r]+|[\s]{2,}/g, " ")
         .replace(/[\n\r]+|[\s]{2,}/g, " ")
-        .trim();
+        .trim()
+        .replace(hostname, "");
       const blurb =
         siblings === 1 &&
         !href.includes("wikipedia.org") &&
@@ -57,7 +60,7 @@ export const parse = (html: string) => {
             .replace(/[\n\r]+|[\s]{2,}/g, " ")
             .trim()
             .replace(title!, "")!
-        );
+        ).replace(hostname, "");
       return { href, title, blurb, source };
     })
     .filter((link) => {
@@ -68,6 +71,7 @@ export const parse = (html: string) => {
         linksSet.add(link.href);
         return true;
       }
-    });
+    })
+    .filter((link) => link.blurb);
   return resultLinks;
 };
