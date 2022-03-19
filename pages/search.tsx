@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import useSearch from "../utils/useSearch";
 
 interface Query {
@@ -9,14 +9,21 @@ interface Query {
 }
 
 const Search: NextPage = () => {
+  const router = useRouter();
   const { query } = useRouter();
   const { q } = query;
   const [input, setInput] = useState<string>();
-  const [searchQuery, setSearchQuery] = useState<Query | {}>({
-    query: q,
-    nonce: new Date().getTime(),
-  });
-  const { results, error } = useSearch(searchQuery as Query);
+  const [searchQuery, setSearchQuery] = useState<Query | {}>({});
+  const { results, error, loading } = useSearch(searchQuery as Query);
+
+  useEffect(() => {
+    if (q) {
+      setSearchQuery({
+        query: q,
+        nonce: new Date().getTime(),
+      });
+    }
+  }, [q]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
@@ -25,11 +32,8 @@ const Search: NextPage = () => {
 
   const handleSubmit = (event: KeyboardEvent) => {
     if (event.key === "Enter" && input) {
-      const time = new Date().getTime();
-      setSearchQuery({
-        query: input,
-        nonce: time,
-      });
+      const searchTerms = encodeURIComponent(input);
+      router.push(`/search?q=${searchTerms}`);
     }
   };
   return (
@@ -39,7 +43,7 @@ const Search: NextPage = () => {
         width: "100vw",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: `${loading ? "" : "center"}`,
         alignItems: "center",
       }}
     >
