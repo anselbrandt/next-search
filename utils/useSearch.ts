@@ -44,7 +44,7 @@ export default function useSearch({ query, nonce }: Query) {
       };
       search();
     }
-  }, [nonce, query]);
+  }, [nonce]);
 
   return { results, error, loading };
 }

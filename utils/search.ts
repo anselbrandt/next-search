@@ -69,6 +69,9 @@ export const parse = (html: string) => {
         return true;
       }
     })
-    .filter((link) => link.blurb);
+    .filter((link) => link.blurb)
+    .filter(
+      (link) => !(link.href.includes("wikipedia") && link.href.includes("#"))
+    );
   return resultLinks;
 };

@@ -18,9 +18,10 @@ const Search: NextPage = () => {
 
   useEffect(() => {
     if (q) {
+      const nonce = new Date().getTime();
       setSearchQuery({
         query: q,
-        nonce: new Date().getTime(),
+        nonce: nonce,
       });
     }
   }, [q]);
@@ -32,6 +33,11 @@ const Search: NextPage = () => {
 
   const handleSubmit = (event: KeyboardEvent) => {
     if (event.key === "Enter" && input) {
+      const nonce = new Date().getTime();
+      setSearchQuery({
+        query: input,
+        nonce: nonce,
+      });
       const searchTerms = encodeURIComponent(input);
       router.push(`/search?q=${searchTerms}`);
     }
@@ -52,7 +58,7 @@ const Search: NextPage = () => {
       </div>
       <div style={{ margin: "1em" }}>
         <input
-          type="search"
+          type="text"
           placeholder="search"
           onChange={handleChange}
           onKeyPress={handleSubmit}
@@ -72,44 +78,24 @@ const Search: NextPage = () => {
         )}
         {results &&
           results.map((result, index) => {
-            if (!result.blurb) {
-              return (
-                <div key={index} style={{ margin: "2em" }}>
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      marginTop: ".25em",
-                      marginBottom: ".5em",
-                      color: "black",
-                    }}
-                  >
-                    <a href={result.href}>{result.source}</a>
-                  </div>
-                  <div color="gray" style={{ fontFamily: "Libre Baskerville" }}>
-                    {result.title}
-                  </div>
+            return (
+              <div key={index} style={{ margin: "2em" }}>
+                <div>{result.source}</div>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    marginTop: ".25em",
+                    marginBottom: ".5em",
+                    color: "black",
+                  }}
+                >
+                  <a href={result.href}>{result.title}</a>
                 </div>
-              );
-            } else {
-              return (
-                <div key={index} style={{ margin: "2em" }}>
-                  <div>{result.source}</div>
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      marginTop: ".25em",
-                      marginBottom: ".5em",
-                      color: "black",
-                    }}
-                  >
-                    <a href={result.href}>{result.title}</a>
-                  </div>
-                  <div color="gray" style={{ fontFamily: "Libre Baskerville" }}>
-                    {result.blurb}
-                  </div>
+                <div color="gray" style={{ fontFamily: "Libre Baskerville" }}>
+                  {result.blurb}
                 </div>
-              );
-            }
+              </div>
+            );
           })}
       </div>
     </div>
