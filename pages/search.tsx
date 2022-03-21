@@ -12,12 +12,13 @@ const Search: NextPage = () => {
   const router = useRouter();
   const { query } = useRouter();
   const { q } = query;
-  const [input, setInput] = useState<string>();
+  const [input, setInput] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<Query | {}>({});
   const { results, error, loading } = useSearch(searchQuery as Query);
 
   useEffect(() => {
     if (q) {
+      setInput(q as string);
       const nonce = new Date().getTime();
       setSearchQuery({
         query: q,
@@ -60,6 +61,7 @@ const Search: NextPage = () => {
         <input
           type="text"
           placeholder="search"
+          value={input}
           onChange={handleChange}
           onKeyPress={handleSubmit}
           autoComplete="off"
